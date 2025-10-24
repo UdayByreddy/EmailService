@@ -12,10 +12,10 @@ public class MailSenderService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendCotactMail(ContactRequest req,String address){
+    public void sendContactMail(ContactRequest req, String address) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(address);
-        message.setSubject("Portfolio Contact: " + req.getName());
+        message.setSubject("Portfolio Contact: " + req.getSubject());
         String text = ""
                 + "Name: " + req.getName() + "\n"
                 + "Email: " + req.getEmail() + "\n\n"

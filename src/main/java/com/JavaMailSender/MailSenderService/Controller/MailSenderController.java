@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class MailSenderController {
 
-    @Value("${app.receive-email:${spring.mail.username:}}")
+    @Value("${app.receive-email}")
     private String receiveEmail;
 
     @Autowired
@@ -21,13 +21,13 @@ public class MailSenderController {
 
     @PostMapping("/send")
     public ResponseEntity<?> sendEmail(@Valid @RequestBody ContactRequest req) {
-        // pick the address to send to
-        String to = (receiveEmail != null && !receiveEmail.isBlank()) ? receiveEmail : System.getenv("RECEIVE_EMAIL");
-        if (to == null || to.isBlank()) {
-            return ResponseEntity.status(500).body("Receiver email is not configured (set app.receive-email or RECEIVE_EMAIL env var)");
+        try {
+            mailSenderService.sendContactMail(req, receiveEmail);
+            return ResponseEntity.ok("Message sent successfully!");
+        } catch (Exception e) {
+            e.printStackTrace(); // For debugging in Railway logs
+            return ResponseEntity.internalServerError()
+                    .body("Failed to send email: " + e.getMessage());
         }
-
-        mailSenderService.sendCotactMail(req,to);
-        return ResponseEntity.ok().body("message sent");
     }
 }
